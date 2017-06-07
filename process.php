@@ -1,4 +1,5 @@
 <?php
+include "koneksi.php";
 echo'
 <!DOCTYPE html>
 <html lang="en">
@@ -87,11 +88,10 @@ echo '<br />';
 $csv = array();
 $file = fopen('test.csv', 'r');
 $pieces;
-$arraydokumenword;
+$arraydokumenword; // kata -kata semua dokumen
 $arraydokumenkategori;
 $arraydokumenbuku;
 echo '<table border=1>';
-
 $datacounter=0;
 while (($result = fgetcsv($file)) !== false)
 {
@@ -101,14 +101,16 @@ while (($result = fgetcsv($file)) !== false)
   echo '<tr>';
     $csv[] = $result;
     echo '<td>'.$result[0].'</td><td>'.$result[1].'</td>'.'<td>P'.$datacounter.'</td>';
+    mysql_query("insert into dokumen (judul,kategori,dokumen) values ('".$result[0]."','".$result[1]."','P".       $datacounter."')")or die (mysql_error());
     $pizza  = $result[0];
     $pieces = explode(" ", $pizza);
     for($i=0;$i<count($pieces);$i++){
         $arrayofword[$i] = $pieces[$i];  
-        echo       $arrayofword[$i];
-        echo '<br />';
+        //echo       $arrayofword[$i];
+        //echo '<br />';
         $arraykategori[$i] = $result[1];
         $arraybuku[$i]=$datacounter;
+        mysql_query("insert into dokumen_detail(detail_kata,kategori,dokumen) values ('".$arrayofword[$i]."','".$arraykategori[$i]."','P".$arraybuku[$i]."')") or die (mysql_error());
     }
     //echo '<br />';
     echo '</tr>';
@@ -119,11 +121,17 @@ while (($result = fgetcsv($file)) !== false)
     unset($arraykategori);
     unset($arraybuku);
     $datacounter++;
-
 }
 $dokumen = $datacounter-1; // kurangi satu karena bagian terakhir counter mengalami penambahan ++
 echo '</table>';
 fclose($file);
+echo "totaaaaaaaaal kataaaaa ".count($arraydokumenword);
+echo "<br />";
+$bubar = $arraydokumenword[1];
+for ($i=0; $i < count($bubar); $i++) { 
+  echo $bubar[$i];
+  echo "<br />";
+}
 /*
 echo '<br />';
 echo 'END OF ROW - Total Dokumen : '.$dokumen;
@@ -139,13 +147,7 @@ echo '<br />';
 echo $pieces[3];
 echo '<br />';
 */
-$word= $arraydokumenbuku[1];
-echo "Jumlah array kata dokumen 1".count($word);
-echo '<br />';
-for($i=0;$i<count($word);$i++){
-  echo $word[$i];
-  echo '<br />';
-}
+
 echo '
     </div>
 </div>
